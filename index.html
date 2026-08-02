@@ -246,8 +246,28 @@ document.getElementById('saveBtn').addEventListener('click', function(){
   }catch(e){ alert('Không lưu được cấu hình.'); }
 });
 
+// Tự làm mới: chỉ chạy KHI app đang mở trên màn hình. Lúc anh chuyển sang app khác hoặc
+// tắt màn hình thì dừng hẳn (đỡ hao pin, đỡ tốn dung lượng, đỡ tốn lượt gọi Apps Script).
+// Khi quay lại app thì lấy dữ liệu mới ngay lập tức, không phải chờ hết chu kỳ.
+var GIAY_LAM_MOI = 30000;
+var boDem = null;
+
+function batTuLamMoi(){
+  if(boDem) clearInterval(boDem);
+  boDem = setInterval(taiLai, GIAY_LAM_MOI);
+}
+function tatTuLamMoi(){
+  if(boDem){ clearInterval(boDem); boDem = null; }
+}
+
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState === 'visible'){ taiLai(); batTuLamMoi(); }
+  else { tatTuLamMoi(); }
+});
+window.addEventListener('focus', function(){ if(document.visibilityState === 'visible') taiLai(); });
+
 taiLai();
-setInterval(taiLai, 60000);
+batTuLamMoi();
 if(!sheetUrl) setTimeout(function(){ document.getElementById('gearBtn').click(); }, 500);
 
 if('serviceWorker' in navigator){
