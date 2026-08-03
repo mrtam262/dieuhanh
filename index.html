@@ -126,6 +126,49 @@ h1{font-size:17.5px;font-weight:800;letter-spacing:-.01em;line-height:1.25;margi
 .modal button{padding:11px 18px;border-radius:11px;border:1px solid var(--line);background:transparent;
   color:var(--text);font-weight:700;font-size:13px;font-family:inherit;}
 .modal button.primary{background:linear-gradient(160deg,var(--gold),var(--gold-dim));border-color:var(--gold);color:#191204;}
+
+/* ===== Nav Xem / Nhập liệu ===== */
+.tabnav{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:13px;
+  padding:4px;margin-bottom:16px;}
+.tabnav.small{padding:3px;border-radius:11px;margin-bottom:16px;}
+.tnbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 8px;
+  border-radius:10px;border:none;background:transparent;color:var(--dim);font-family:inherit;
+  font-size:13px;font-weight:700;}
+.tabnav.small .tnbtn{padding:9px 8px;font-size:12.5px;}
+.tnbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.tnbtn.on{background:linear-gradient(160deg,var(--gold),var(--gold-dim));color:#191204;}
+
+/* ===== Khối "đang nhập với" ===== */
+.who{display:flex;justify-content:space-between;align-items:center;background:var(--surface);
+  border:1px solid var(--line);border-radius:11px;padding:10px 13px;margin-bottom:14px;font-size:12px;color:var(--dim);}
+.who b{color:var(--text);}
+.who a{color:var(--gold);font-size:11.5px;font-weight:700;text-decoration:none;}
+
+/* ===== Form nhập liệu ===== */
+.fcard{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:16px;}
+.fgroup{margin-bottom:14px;}
+.fgroup label{display:block;font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:7px;}
+.fgroup input[type=text],.fgroup select,.fgroup textarea{
+  width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);
+  color:var(--text);font-family:inherit;font-size:14px;}
+.fgroup input:focus,.fgroup select:focus,.fgroup textarea:focus{outline:none;border-color:var(--gold-dim);}
+.fgroup textarea{resize:vertical;min-height:70px;}
+.fgroup select{-webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%238993ad' stroke-width='2' fill='none'/></svg>");
+  background-repeat:no-repeat;background-position:right 12px center;}
+.dt-row{display:flex;align-items:center;gap:6px;}
+.dt-row input[type=text]{flex:2.3;text-align:center;letter-spacing:.03em;}
+.dt-row select{flex:0.75;min-width:0;text-align:center;padding-left:6px;padding-right:16px;font-size:13px;}
+.dt-sep{color:var(--dim);font-weight:700;}
+.fnote{font-size:11px;color:var(--dim2);line-height:1.5;margin-bottom:14px;}
+.submit-btn{width:100%;padding:13px;border-radius:12px;border:none;
+  background:linear-gradient(160deg,var(--gold),var(--gold-dim));color:#191204;
+  font-weight:800;font-size:14.5px;font-family:inherit;}
+.submit-btn:disabled{opacity:.6;}
+.banner{display:none;padding:11px 13px;border-radius:10px;margin-bottom:12px;font-size:12.5px;font-weight:600;line-height:1.5;}
+.banner.show{display:block;}
+.banner.ok{background:rgba(58,168,106,.14);color:#87ddaa;border:1px solid rgba(58,168,106,.3);}
+.banner.err{background:rgba(224,82,82,.14);color:#ff9d9d;border:1px solid rgba(224,82,82,.3);}
 </style>
 </head>
 <body>
@@ -141,6 +184,18 @@ h1{font-size:17.5px;font-weight:800;letter-spacing:-.01em;line-height:1.25;margi
   </button>
 </header>
 
+<div class="tabnav" id="tabNav">
+  <button type="button" class="tnbtn on" data-tab="xem">
+    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+    Xem
+  </button>
+  <button type="button" class="tnbtn" data-tab="nhap">
+    <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+    Nhập liệu
+  </button>
+</div>
+
+<div id="panelXem">
 <div class="bar" id="hBar"></div>
 <div class="stats" id="stats"></div>
 <div id="ds"><div class="empty">Đang tải dữ liệu…</div></div>
@@ -151,6 +206,104 @@ h1{font-size:17.5px;font-weight:800;letter-spacing:-.01em;line-height:1.25;margi
     <svg viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
     Làm mới
   </button>
+</div>
+</div>
+
+<div id="panelNhap" style="display:none;">
+
+  <div class="who" id="whoBox" style="display:none;">
+    <span>Đang nhập với tư cách <b id="whoName">—</b></span>
+    <a href="#" id="logoutLink">Đổi người dùng</a>
+  </div>
+
+  <div class="tabnav small" id="formTabs" style="display:none;">
+    <button type="button" class="tnbtn on" data-ftab="new">Yêu cầu mới</button>
+    <button type="button" class="tnbtn" data-ftab="update">Cập nhật kết quả</button>
+  </div>
+
+  <div id="bannerNew" class="banner"></div>
+  <div id="bannerUpdate" class="banner"></div>
+
+  <form id="formNew" class="fcard" style="display:none;">
+    <div class="fgroup">
+      <label>Loại báo cáo</label>
+      <input type="text" name="loaiBaoCao" required list="dlLoaiBaoCao" placeholder="Chọn hoặc nhập mới…">
+      <datalist id="dlLoaiBaoCao"></datalist>
+    </div>
+    <div class="fgroup">
+      <label>Cơ quan/Cấp yêu cầu</label>
+      <input type="text" name="coQuan" required list="dlCoQuan" placeholder="Chọn hoặc nhập mới…">
+      <datalist id="dlCoQuan"></datalist>
+    </div>
+    <div class="fgroup">
+      <label>Nội dung văn bản/Yêu cầu</label>
+      <textarea name="noiDung" required placeholder="Nhập nội dung công việc…"></textarea>
+    </div>
+    <div class="fgroup">
+      <label>Người triển khai</label>
+      <input type="text" name="nguoiTrienKhai" list="dlNguoiTrienKhai" placeholder="Chọn hoặc nhập tên…">
+      <datalist id="dlNguoiTrienKhai"></datalist>
+    </div>
+    <div class="fgroup">
+      <label>Người thực hiện</label>
+      <input type="text" name="nguoiThucHien" list="dlNguoiThucHien" placeholder="Chọn hoặc nhập tên…">
+      <datalist id="dlNguoiThucHien"></datalist>
+    </div>
+    <div class="fgroup">
+      <label>Thời hạn (Deadline)</label>
+      <div class="dt-row">
+        <input type="text" id="inpHanChotNgayThang" placeholder="dd/mm/yyyy" inputmode="numeric" maxlength="10" required>
+        <select id="selHanChotGio" required></select>
+        <span class="dt-sep">:</span>
+        <select id="selHanChotPhut" required></select>
+      </div>
+    </div>
+    <div class="fnote">Không tải được file đính kèm trên điện thoại — cần kèm file thì nhập trên máy tính.</div>
+    <button class="submit-btn" type="submit" id="btnSubmitNew">Gửi yêu cầu</button>
+  </form>
+
+  <form id="formUpdate" class="fcard" style="display:none;">
+    <div class="fgroup">
+      <label>Chọn công việc</label>
+      <select name="chonCongViec" id="selCongViec" required>
+        <option value="">— Chọn công việc chưa hoàn thành —</option>
+      </select>
+    </div>
+    <div class="fgroup">
+      <label>Trạng thái</label>
+      <select name="trangThai" required>
+        <option value="">— Chọn —</option>
+        <option>Đang thực hiện</option>
+        <option>Đã hoàn thành</option>
+      </select>
+    </div>
+    <div class="fgroup">
+      <label>Thời gian hoàn thành</label>
+      <div class="dt-row">
+        <input type="text" id="inpThoiGianHTNgayThang" placeholder="dd/mm/yyyy" inputmode="numeric" maxlength="10">
+        <select id="selThoiGianHTGio"></select>
+        <span class="dt-sep">:</span>
+        <select id="selThoiGianHTPhut"></select>
+      </div>
+    </div>
+    <div class="fnote">Không tải được file kết quả trên điện thoại — cần kèm file thì cập nhật trên máy tính.</div>
+    <button class="submit-btn" type="submit" id="btnSubmitUpdate">Cập nhật</button>
+  </form>
+
+</div>
+
+<div class="modal-bg" id="loginGate">
+  <div class="modal">
+    <h3>Đăng nhập để nhập liệu</h3>
+    <p>Nhập tên và mã PIN được cấp. Điện thoại này sẽ tự nhớ, không cần đăng nhập lại lần sau.</p>
+    <div id="loginErr" class="banner err" style="margin-bottom:12px;"></div>
+    <input type="text" id="loginTen" placeholder="Họ tên" autocapitalize="words">
+    <input type="text" id="loginMa" placeholder="Mã PIN" inputmode="numeric">
+    <div class="row">
+      <button id="loginCancelBtn">Đóng</button>
+      <button class="primary" id="loginBtn">Đăng nhập</button>
+    </div>
+  </div>
 </div>
 
 <div class="modal-bg" id="modalBg">
@@ -167,6 +320,14 @@ h1{font-size:17.5px;font-weight:800;letter-spacing:-.01em;line-height:1.25;margi
 
 <script>
 var DL = null, loc = 'tatca', sheetUrl = null, dangTai = false;
+var authTen = null, authMa = null;
+try{
+  authTen = localStorage.getItem('auth-ten') || null;
+  authMa = localStorage.getItem('auth-ma') || null;
+  if(authTen === 'undefined' || authTen === 'null') authTen = null;
+  if(authMa === 'undefined' || authMa === 'null') authMa = null;
+  if(!authTen || !authMa){ authTen = authMa = null; }
+}catch(e){}
 
 try { sheetUrl = localStorage.getItem('sheet-webapp-url') || null; } catch(e) {}
 
@@ -320,6 +481,229 @@ window.addEventListener('focus', function(){ if(document.visibilityState === 'vi
 taiLai();
 batTuLamMoi();
 if(!sheetUrl) setTimeout(function(){ document.getElementById('gearBtn').click(); }, 500);
+
+// ===== Nav Xem / Nhập liệu =====
+document.getElementById('tabNav').addEventListener('click', function(ev){
+  var el = ev.target.closest('.tnbtn');
+  if(!el) return;
+  var tab = el.getAttribute('data-tab');
+  document.querySelectorAll('#tabNav .tnbtn').forEach(function(b){ b.classList.toggle('on', b===el); });
+  document.getElementById('panelXem').style.display = tab === 'xem' ? 'block' : 'none';
+  document.getElementById('panelNhap').style.display = tab === 'nhap' ? 'block' : 'none';
+  if(tab === 'nhap') moKhoaHoacDangNhap();
+});
+
+function moKhoaHoacDangNhap(){
+  if(authTen && authMa){
+    document.getElementById('loginGate').classList.remove('show');
+    document.getElementById('whoBox').style.display = 'flex';
+    document.getElementById('whoName').textContent = authTen;
+    document.getElementById('formTabs').style.display = 'flex';
+    document.getElementById('formNew').style.display = 'block';
+    napDanhMuc();
+    napGioPhutTatCa();
+  }else{
+    document.getElementById('loginGate').classList.add('show');
+  }
+}
+
+document.getElementById('loginCancelBtn').addEventListener('click', function(){
+  document.getElementById('loginGate').classList.remove('show');
+  document.querySelector('#tabNav [data-tab="xem"]').click();
+});
+
+async function thuDangNhap(ten, ma){
+  var errEl = document.getElementById('loginErr');
+  errEl.classList.remove('show');
+  if(!sheetUrl){ errEl.textContent = 'Chưa cấu hình link Apps Script — bấm bánh răng ở góc trên trước.'; errEl.classList.add('show','err'); return; }
+  try{
+    var qs = new URLSearchParams({ action:'login', ten:ten, ma:ma });
+    var res = await fetch(sheetUrl + '?' + qs.toString(), { cache:'no-store' });
+    var data = await res.json();
+    if(data.loi) throw new Error(data.loi);
+    if(!data.ten || typeof data.ten !== 'string') throw new Error('Máy chủ trả dữ liệu không hợp lệ — có thể Apps Script chưa Deploy bản mới nhất.');
+    authTen = data.ten; authMa = ma;
+    try{ localStorage.setItem('auth-ten', authTen); localStorage.setItem('auth-ma', authMa); }catch(e){}
+    moKhoaHoacDangNhap();
+  }catch(err){
+    errEl.textContent = 'Lỗi: ' + err.message;
+    errEl.classList.add('show','err');
+  }
+}
+document.getElementById('loginBtn').addEventListener('click', function(){
+  var ten = document.getElementById('loginTen').value.trim();
+  var ma = document.getElementById('loginMa').value.trim();
+  if(!ten || !ma){
+    var errEl = document.getElementById('loginErr');
+    errEl.textContent = 'Nhập đủ tên và mã PIN.'; errEl.classList.add('show','err'); return;
+  }
+  thuDangNhap(ten, ma);
+});
+document.getElementById('logoutLink').addEventListener('click', function(ev){
+  ev.preventDefault();
+  authTen = authMa = null;
+  try{ localStorage.removeItem('auth-ten'); localStorage.removeItem('auth-ma'); }catch(e){}
+  document.getElementById('whoBox').style.display = 'none';
+  document.getElementById('formTabs').style.display = 'none';
+  document.getElementById('formNew').style.display = 'none';
+  document.getElementById('formUpdate').style.display = 'none';
+  document.getElementById('loginTen').value = '';
+  document.getElementById('loginMa').value = '';
+  document.getElementById('loginGate').classList.add('show');
+});
+
+// ===== Tab Yêu cầu mới / Cập nhật kết quả =====
+document.getElementById('formTabs').addEventListener('click', function(ev){
+  var el = ev.target.closest('.tnbtn');
+  if(!el) return;
+  var t = el.getAttribute('data-ftab');
+  document.querySelectorAll('#formTabs .tnbtn').forEach(function(b){ b.classList.toggle('on', b===el); });
+  document.getElementById('formNew').style.display = t === 'new' ? 'block' : 'none';
+  document.getElementById('formUpdate').style.display = t === 'update' ? 'block' : 'none';
+  if(t === 'update') napDanhSachCongViec();
+});
+
+// ===== Danh mục gợi ý (Loại báo cáo / Cơ quan / Người triển khai / Người thực hiện) =====
+async function napDanhMuc(){
+  if(!sheetUrl) return;
+  try{
+    var qs = new URLSearchParams({ action:'danhmuc' });
+    var res = await fetch(sheetUrl + '?' + qs.toString(), { cache:'no-store' });
+    var data = await res.json();
+    if(data.loi) throw new Error(data.loi);
+    var napList = function(id, arr){ document.getElementById(id).innerHTML = (arr||[]).map(function(v){ return '<option value="'+esc(v)+'">'; }).join(''); };
+    napList('dlLoaiBaoCao', data.loaiBaoCao);
+    napList('dlCoQuan', data.coQuan);
+    napList('dlNguoiTrienKhai', data.nguoiTrienKhai);
+    napList('dlNguoiThucHien', data.nguoiThucHien);
+  }catch(err){
+    showBanner('bannerNew', false, 'Không tải được danh mục: ' + err.message);
+  }
+}
+
+// ===== Danh sách công việc chưa hoàn thành (dùng luôn dữ liệu đã tải cho tab Xem) =====
+function napDanhSachCongViec(){
+  var sel = document.getElementById('selCongViec');
+  var chuaXong = (DL && DL.congViec || []).filter(function(v){ return v.trangThai !== 'Đã hoàn thành'; });
+  sel.innerHTML = '<option value="">— Chọn công việc chưa hoàn thành —</option>' +
+    chuaXong.map(function(v){ return '<option value="'+esc(v.noiDung)+'">'+esc(v.noiDung)+'</option>'; }).join('');
+}
+
+// ===== Ô ngày dd/mm/yyyy tự thêm dấu "/" =====
+function ganMatNaNgay(idInput, macDinhHomNay){
+  var inp = document.getElementById(idInput);
+  inp.addEventListener('input', function(){
+    var so = inp.value.replace(/\D/g,'').substring(0,8);
+    var kq = so.substring(0,2);
+    if(so.length > 2) kq += '/' + so.substring(2,4);
+    if(so.length > 4) kq += '/' + so.substring(4,8);
+    inp.value = kq;
+  });
+  if(macDinhHomNay){
+    var now = new Date();
+    inp.value = p2(now.getDate()) + '/' + p2(now.getMonth()+1) + '/' + now.getFullYear();
+  }
+}
+ganMatNaNgay('inpHanChotNgayThang', true);
+ganMatNaNgay('inpThoiGianHTNgayThang', false);
+
+function ghepNgayGio(ngayThangText, gio, phut){
+  var s = (ngayThangText || '').trim();
+  if(!s) return '';
+  var m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if(!m) return null;
+  return m[3] + '-' + m[2] + '-' + m[1] + 'T' + gio + ':' + phut;
+}
+
+function napGioPhut(idGio, idPhut){
+  var selGio = document.getElementById(idGio), selPhut = document.getElementById(idPhut);
+  var oGio = ''; for(var h=0; h<24; h++) oGio += '<option value="'+p2(h)+'">'+p2(h)+'</option>';
+  var oPhut = ''; for(var m=0; m<60; m+=5) oPhut += '<option value="'+p2(m)+'">'+p2(m)+'</option>';
+  selGio.innerHTML = oGio; selPhut.innerHTML = oPhut;
+  var now = new Date();
+  selGio.value = p2(now.getHours());
+  selPhut.value = p2(Math.round(now.getMinutes()/5)*5 % 60);
+}
+function napGioPhutTatCa(){
+  napGioPhut('selHanChotGio','selHanChotPhut');
+  napGioPhut('selThoiGianHTGio','selThoiGianHTPhut');
+}
+
+function showBanner(id, ok, msg){
+  var el = document.getElementById(id);
+  el.className = 'banner show ' + (ok ? 'ok' : 'err');
+  el.textContent = (ok ? '✅ ' : '⚠️ ') + msg;
+  setTimeout(function(){ el.classList.remove('show'); }, ok ? 9000 : 8000);
+}
+
+async function guiDuLieu(params){
+  if(!sheetUrl) throw new Error('Chưa cấu hình link Apps Script.');
+  var qs = new URLSearchParams(Object.assign({ action:'submit', ten:authTen||'', ma:authMa||'' }, params));
+  var res = await fetch(sheetUrl + '?' + qs.toString(), { method:'GET', cache:'no-store' });
+  var data = await res.json();
+  if(data.loi) throw new Error(data.loi);
+  return data;
+}
+
+document.getElementById('formNew').addEventListener('submit', async function(ev){
+  ev.preventDefault();
+  var btn = document.getElementById('btnSubmitNew');
+  var f = ev.target;
+  btn.disabled = true; btn.textContent = 'Đang gửi…';
+  try{
+    var hanChot = ghepNgayGio(document.getElementById('inpHanChotNgayThang').value, document.getElementById('selHanChotGio').value, document.getElementById('selHanChotPhut').value);
+    if(hanChot === null) throw new Error('Ô Thời hạn (Deadline) chưa đúng định dạng dd/mm/yyyy.');
+    await guiDuLieu({
+      loai: 'yeu_cau',
+      loaiBaoCao: f.loaiBaoCao.value,
+      coQuan: f.coQuan.value,
+      noiDung: f.noiDung.value,
+      hanChot: hanChot,
+      nguoiTrienKhai: f.nguoiTrienKhai.value,
+      nguoiThucHien: f.nguoiThucHien.value,
+      fileLink: ''
+    });
+    showBanner('bannerNew', true, 'Đã gửi yêu cầu thành công.');
+    f.reset();
+    napGioPhut('selHanChotGio','selHanChotPhut');
+    var now = new Date();
+    document.getElementById('inpHanChotNgayThang').value = p2(now.getDate())+'/'+p2(now.getMonth()+1)+'/'+now.getFullYear();
+    taiLai();
+  }catch(err){
+    showBanner('bannerNew', false, 'Lỗi: ' + err.message);
+  }finally{
+    btn.disabled = false; btn.textContent = 'Gửi yêu cầu';
+  }
+});
+
+document.getElementById('formUpdate').addEventListener('submit', async function(ev){
+  ev.preventDefault();
+  var btn = document.getElementById('btnSubmitUpdate');
+  var f = ev.target;
+  btn.disabled = true; btn.textContent = 'Đang gửi…';
+  try{
+    var thoiGianHT = ghepNgayGio(document.getElementById('inpThoiGianHTNgayThang').value, document.getElementById('selThoiGianHTGio').value, document.getElementById('selThoiGianHTPhut').value);
+    if(thoiGianHT === null) throw new Error('Ô Thời gian hoàn thành chưa đúng định dạng dd/mm/yyyy.');
+    if(!f.chonCongViec.value) throw new Error('Chưa chọn công việc.');
+    await guiDuLieu({
+      loai: 'cap_nhat',
+      chonCongViec: f.chonCongViec.value,
+      trangThai: f.trangThai.value,
+      thoiGianHT: thoiGianHT,
+      linkVanBan: ''
+    });
+    showBanner('bannerUpdate', true, 'Đã cập nhật thành công.');
+    f.reset();
+    napGioPhut('selThoiGianHTGio','selThoiGianHTPhut');
+    document.getElementById('inpThoiGianHTNgayThang').value = '';
+    await taiLai();
+    napDanhSachCongViec();
+  }catch(err){
+    showBanner('bannerUpdate', false, 'Lỗi: ' + err.message);
+  }finally{
+    btn.disabled = false; btn.textContent = 'Cập nhật';
+  }
+});
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
