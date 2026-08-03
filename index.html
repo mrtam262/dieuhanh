@@ -61,30 +61,22 @@ h1{font-size:17.5px;font-weight:800;letter-spacing:-.01em;line-height:1.25;margi
 .ibtn:active{background:var(--surface2);}
 .ibtn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
 
-/* ===== 5 ô số liệu — 1 dòng ===== */
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px;}
+/* ===== 5 ô số liệu — 1 dòng, bấm để lọc ===== */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:15px;}
 .st{background:var(--surface);border:1px solid var(--line);border-radius:11px;
-  padding:9px 4px 8px;text-align:center;position:relative;overflow:hidden;}
+  padding:9px 4px 8px;text-align:center;position:relative;overflow:hidden;
+  font-family:inherit;color:inherit;-webkit-appearance:none;appearance:none;
+  cursor:pointer;width:100%;}
 .st::before{content:'';position:absolute;left:0;top:0;right:0;height:2.5px;background:var(--c);}
 .st b{display:block;font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;color:var(--c);line-height:1;}
 .st span{display:block;color:var(--dim);font-size:7.3px;font-weight:600;letter-spacing:.02em;
   text-transform:uppercase;margin-top:4px;line-height:1.25;}
 .st.zero b{color:var(--dim2);} .st.zero::before{background:var(--dim2);opacity:.4;}
+.st.on{background:var(--surface2);border-color:var(--c);box-shadow:0 0 0 1px var(--c) inset;}
+.st.on span{color:var(--text);}
 
 .bar{height:5px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden;display:flex;margin-bottom:15px;}
 .bar i{display:block;height:100%;transition:width .4s ease;}
-
-/* ===== Bộ lọc ===== */
-.filters{display:flex;gap:6px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none;
-  margin:0 -14px 2px;padding-left:14px;padding-right:14px;}
-.filters::-webkit-scrollbar{display:none;}
-.fchip{flex-shrink:0;padding:7px 14px;border-radius:99px;border:1px solid var(--line);
-  background:var(--surface);color:var(--dim);font-size:12.5px;font-weight:600;white-space:nowrap;
-  display:flex;align-items:center;gap:6px;}
-.fchip u{text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;
-  background:rgba(255,255,255,.07);padding:1px 5px;border-radius:5px;}
-.fchip.on{background:linear-gradient(160deg,var(--gold),var(--gold-dim));border-color:var(--gold);color:#191204;}
-.fchip.on u{background:rgba(0,0,0,.16);}
 
 /* ===== Thẻ công việc ===== */
 .card{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--bar,var(--line));
@@ -151,7 +143,6 @@ h1{font-size:17.5px;font-weight:800;letter-spacing:-.01em;line-height:1.25;margi
 
 <div class="bar" id="hBar"></div>
 <div class="stats" id="stats"></div>
-<div class="filters" id="filters"></div>
 <div id="ds"><div class="empty">Đang tải dữ liệu…</div></div>
 
 <div class="foot">
@@ -176,7 +167,6 @@ h1{font-size:17.5px;font-weight:800;letter-spacing:-.01em;line-height:1.25;margi
 
 <script>
 var DL = null, loc = 'tatca', sheetUrl = null, dangTai = false;
-var BO_LOC = [['tatca','Tất cả'],['quahan','Quá hạn'],['cangap','Cần gấp'],['chuaxong','Chưa xong'],['daxong','Đã xong']];
 
 try { sheetUrl = localStorage.getItem('sheet-webapp-url') || null; } catch(e) {}
 
@@ -208,9 +198,9 @@ function oHan(iso){
   return '<div class="dl"><b'+cl+'>'+t+'</b><small>'+p2(d.getHours())+':'+p2(d.getMinutes())+'</small></div>';
 }
 
-function oSo(so, ten, mau){
-  return '<div class="st'+(so===0?' zero':'')+'" style="--c:'+mau+'">'+
-    '<span class="dot"></span><div><b>'+so+'</b><span>'+ten+'</span></div></div>';
+function oSo(so, ten, mau, key){
+  return '<button type="button" class="st'+(so===0?' zero':'')+(loc===key?' on':'')+
+    '" style="--c:'+mau+'" data-loc="'+key+'"><b>'+so+'</b><span>'+ten+'</span></button>';
 }
 
 function ve(){
@@ -231,18 +221,9 @@ function ve(){
     ((dang - canGap - quaHan) > 0 ? '<i style="width:'+((dang-canGap-quaHan)/v.length*100)+'%;background:var(--blue)"></i>' : '');
 
   document.getElementById('stats').innerHTML =
-    oSo(v.length,'Tổng số việc','var(--text)') + oSo(xong,'Đã hoàn thành','var(--ok)') +
-    oSo(dang,'Đang thực hiện','var(--blue)')   + oSo(canGap,'Cần gấp','var(--warn)') +
-    oSo(quaHan,'Quá hạn','var(--alert)');
-
-  var dem = {
-    tatca: v.length, quahan: quaHan, cangap: canGap,
-    chuaxong: dang, daxong: xong
-  };
-  document.getElementById('filters').innerHTML = BO_LOC.map(function(f){
-    return '<div class="fchip'+(loc===f[0]?' on':'')+'" data-loc="'+f[0]+'">'+f[1]+
-      '<u>'+dem[f[0]]+'</u></div>';
-  }).join('');
+    oSo(v.length,'Tổng số việc','var(--text)','tatca') + oSo(xong,'Đã hoàn thành','var(--ok)','daxong') +
+    oSo(dang,'Đang thực hiện','var(--blue)','chuaxong') + oSo(canGap,'Cần gấp','var(--warn)','cangap') +
+    oSo(quaHan,'Quá hạn','var(--alert)','quahan');
 
   var ds = v.filter(function(x){
     if(loc === 'quahan')   return x.canhBao === 'BÁO ĐỘNG';
@@ -277,8 +258,8 @@ function ve(){
   document.getElementById('upd').textContent = 'Cập nhật ' + p2(u.getDate())+'/'+p2(u.getMonth()+1)+' '+p2(u.getHours())+':'+p2(u.getMinutes());
 }
 
-document.getElementById('filters').addEventListener('click', function(ev){
-  var el = ev.target.closest('.fchip');
+document.getElementById('stats').addEventListener('click', function(ev){
+  var el = ev.target.closest('.st');
   if(!el) return;
   loc = el.getAttribute('data-loc');
   ve();
