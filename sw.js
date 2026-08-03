@@ -6,11 +6,12 @@
  * Mỗi khi sửa index.html, hãy tăng số phiên bản PHIEN_BAN bên dưới (v1 -> v2 -> ...)
  * để điện thoại nhận bản mới thay vì dùng bản cũ đã lưu.
  */
-const PHIEN_BAN = 'ttdh-v2';
+const PHIEN_BAN = 'ttdh-v3';
 const VO_GIAO_DIEN = [
   './',
   './index.html',
   './manifest.json',
+  './logo.png',
   './icon-192.png',
   './icon-512.png',
   './apple-touch-icon.png'
